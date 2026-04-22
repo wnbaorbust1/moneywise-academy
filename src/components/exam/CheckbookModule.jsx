@@ -74,16 +74,35 @@ export default function CheckbookModule({ scenario, onComplete }) {
         </div>
       </div>
 
-      <Card className="p-4 bg-muted/40 border-dashed mb-5">
+      <Card className="p-4 bg-muted/40 border-dashed mb-3">
         <div className="flex items-start gap-2">
           <Lightbulb className="w-4 h-4 text-accent shrink-0 mt-0.5" />
           <div className="text-sm">
             <p className="font-medium">Fill in the running balance after each transaction.</p>
             <p className="text-muted-foreground text-xs mt-1">
-              For deposits (+), add to the previous balance. For checks/debits (−), subtract from the previous balance.
+              Use the formula below for every row. Start with the previous balance, then apply the transaction.
             </p>
           </div>
         </div>
+      </Card>
+
+      {/* Formula reference */}
+      <Card className="p-3 mb-5 border-primary/30 bg-primary/5">
+        <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">📐 Formula</p>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sm">
+            <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">+</span>
+            <span className="font-mono font-semibold">Deposit: &nbsp; Previous Balance <span className="text-primary">+ Amount</span> = New Balance</span>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="w-5 h-5 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center text-xs font-bold shrink-0">−</span>
+            <span className="font-mono font-semibold">Check/Debit: &nbsp; Previous Balance <span className="text-destructive">− Amount</span> = New Balance</span>
+          </div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-2">
+          Example: If your balance is <strong>$1,200</strong> and you write a check for <strong>$450</strong> → &nbsp;
+          <span className="font-mono font-semibold">$1,200 − $450 = $750</span>
+        </p>
       </Card>
 
       {/* Checkbook register */}
