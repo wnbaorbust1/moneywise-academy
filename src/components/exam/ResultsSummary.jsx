@@ -1,10 +1,11 @@
 import { motion } from "framer-motion";
+import { getLevel, calcFinancialHealthScore, getFinancialHealthLabel } from "@/lib/xpSystem";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Trophy, Star, Target, RotateCcw,
-  TrendingUp, Wallet, FileText, Brain, PenLine, BookOpen, Landmark, CreditCard,
+  TrendingUp, Wallet, FileText, Brain, PenLine, BookOpen, Landmark, CreditCard, Zap,
 } from "lucide-react";
 
 function getGrade(pct) {
@@ -26,11 +27,14 @@ const moduleIcons = {
   "Credit Application": CreditCard,
 };
 
-export default function ResultsSummary({ scores, scenario, onRestart }) {
+export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) {
   const totalCorrect = scores.reduce((sum, s) => sum + s.correct, 0);
   const totalQuestions = scores.reduce((sum, s) => sum + s.total, 0);
   const percentage = Math.round((totalCorrect / totalQuestions) * 100);
   const grade = getGrade(percentage);
+  const levelInfo = getLevel(xp);
+  const healthScore = calcFinancialHealthScore(scores, scenario);
+  const healthLabel = getFinancialHealthLabel(healthScore);
 
   return (
     <div className="space-y-5">
@@ -62,6 +66,31 @@ export default function ResultsSummary({ scores, scenario, onRestart }) {
             {totalCorrect} of {totalQuestions} correct
           </p>
           <p className="text-sm font-medium mt-3">{grade.msg}</p>
+          {/* XP + Level + Health Score row */}
+          <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border">
+            <div className="text-center">
+              <div className="flex items-center justify-center gap-1">
+                <Zap className="w-4 h-4 text-yellow-500" />
+                <span className="font-bold text-lg">{xp}</span>
+              </div>
+              <p className="text-[10px] text-muted-foreground">Total XP</p>
+            </div>
+            <div className="text-center">
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold mx-auto"
+                style={{ backgroundColor: levelInfo.color }}
+              >
+                {levelInfo.level}
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-0.5">{levelInfo.title}</p>
+            </div>
+            {healthScore > 0 && (
+              <div className="text-center">
+                <span className={`font-bold text-lg ${healthLabel.color}`}>{healthScore}</span>
+                <p className="text-[10px] text-muted-foreground">Fin. Health Score</p>
+              </div>
+            )}
+          </div>
         </Card>
       </motion.div>
 
