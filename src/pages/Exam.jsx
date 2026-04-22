@@ -15,6 +15,7 @@ import GoalsDashboard from "@/components/exam/GoalsDashboard";
 import LevelUpOverlay from "@/components/exam/LevelUpOverlay";
 import MilestoneToast from "@/components/exam/MilestoneToast";
 import PathSelector from "@/components/exam/PathSelector";
+import { BadgeUnlockOverlay, getEarnedBadges } from "@/components/exam/BadgeShowcase";
 import {
   generateScenario,
   getBudgetQuestions,
@@ -38,7 +39,9 @@ export default function Exam() {
   const [showXPGain, setShowXPGain] = useState(false);
   const [levelUpInfo, setLevelUpInfo] = useState(null);
   const [moduleMilestone, setModuleMilestone] = useState(null);
+  const [newBadge, setNewBadge] = useState(null);
   const prevXPRef = useRef(0);
+  const prevBadgeIdsRef = useRef(new Set());
 
   const scenario = useMemo(
     () => (studentName && selectedPath ? generateScenario(studentName, selectedPath) : null),
@@ -98,6 +101,14 @@ export default function Exam() {
       });
     }
 
+    // Check for newly earned badges
+    const earnedNow = getEarnedBadges(newXP, newScores);
+    const justUnlocked = earnedNow.find((b) => !prevBadgeIdsRef.current.has(b.id));
+    if (justUnlocked) {
+      setNewBadge(justUnlocked);
+    }
+    earnedNow.forEach((b) => prevBadgeIdsRef.current.add(b.id));
+
     setCurrentModule((prev) => prev + 1);
   };
 
@@ -145,6 +156,7 @@ export default function Exam() {
     <div className="min-h-screen bg-background">
       <LevelUpOverlay levelInfo={levelUpInfo} onDone={() => setLevelUpInfo(null)} />
       <MilestoneToast milestone={moduleMilestone} onDone={() => setModuleMilestone(null)} />
+      <BadgeUnlockOverlay badge={newBadge} onDone={() => setNewBadge(null)} />
 
       {/* Sticky header with progress + XP + goals */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border/50 shadow-sm">

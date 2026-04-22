@@ -10,6 +10,7 @@ import {
   AlertTriangle, Crown
 } from "lucide-react";
 import { getAllStudents, clearAllStudents } from "@/lib/storage";
+import ExportButton from "@/components/teacher/ExportButton";
 import { getLevel, getFinancialHealthLabel, calcFinancialHealthScore, LEVELS } from "@/lib/xpSystem";
 import { Link } from "react-router-dom";
 
@@ -130,6 +131,7 @@ export default function TeacherDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <ExportButton students={filteredStudents} />
             <Button variant="outline" size="sm" onClick={load} className="gap-1.5 h-8">
               <RefreshCw className="w-3 h-3" /> Refresh
             </Button>
