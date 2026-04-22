@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
   Trophy, Star, Target, RotateCcw,
-  TrendingUp, Wallet, FileText, Brain,
+  TrendingUp, Wallet, FileText, Brain, PenLine, BookOpen,
 } from "lucide-react";
 
 function getGrade(pct) {
@@ -20,6 +20,8 @@ const moduleIcons = {
   "Budget Building": Wallet,
   "Tax Filing": FileText,
   "Financial Literacy": Brain,
+  "Writing Checks": PenLine,
+  "Checkbook Balancing": BookOpen,
 };
 
 export default function ResultsSummary({ scores, scenario, onRestart }) {

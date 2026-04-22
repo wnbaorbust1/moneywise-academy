@@ -5,6 +5,8 @@ import WelcomeScreen from "@/components/exam/WelcomeScreen";
 import ScenarioCard from "@/components/exam/ScenarioCard";
 import QuizModule from "@/components/exam/QuizModule";
 import ResultsSummary from "@/components/exam/ResultsSummary";
+import WriteCheckModule from "@/components/exam/WriteCheckModule";
+import CheckbookModule from "@/components/exam/CheckbookModule";
 import {
   generateScenario,
   getBudgetQuestions,
@@ -12,7 +14,7 @@ import {
   getFinancialLiteracyQuestions,
 } from "@/lib/scenarios";
 
-// Modules: 0 = scenario, 1 = budget, 2 = taxes, 3 = financial literacy, 4 = results
+// Modules: 0=scenario, 1=budget, 2=taxes, 3=fin literacy, 4=write checks, 5=checkbook, 6=results
 export default function Exam() {
   const [studentName, setStudentName] = useState(null);
   const [currentModule, setCurrentModule] = useState(0);
@@ -98,6 +100,24 @@ export default function Exam() {
           )}
 
           {currentModule === 4 && (
+            <motion.div key="checks" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <WriteCheckModule
+                scenario={scenario}
+                onComplete={handleModuleComplete}
+              />
+            </motion.div>
+          )}
+
+          {currentModule === 5 && (
+            <motion.div key="checkbook" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <CheckbookModule
+                scenario={scenario}
+                onComplete={handleModuleComplete}
+              />
+            </motion.div>
+          )}
+
+          {currentModule === 6 && (
             <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <ResultsSummary
                 scores={scores}
