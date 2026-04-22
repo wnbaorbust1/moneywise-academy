@@ -16,6 +16,7 @@ import LevelUpOverlay from "@/components/exam/LevelUpOverlay";
 import MilestoneToast from "@/components/exam/MilestoneToast";
 import PathSelector from "@/components/exam/PathSelector";
 import ScenarioReviewSheet from "@/components/exam/ScenarioReviewSheet";
+import EducationHubSheet from "@/components/exam/EducationHubSheet";
 import { BadgeUnlockOverlay, getEarnedBadges } from "@/components/exam/BadgeShowcase";
 import {
   generateScenario,
@@ -167,6 +168,9 @@ export default function Exam() {
             <div className="flex-1">
               <XPBar xp={currentXP} newXP={xpGain} showGain={showXPGain} />
             </div>
+            {currentModule > 0 && currentModule < TOTAL_MODULES && scenario && (
+              <EducationHubSheet moduleIndex={currentModule} />
+            )}
             {currentModule > 0 && currentModule < TOTAL_MODULES && scenario && (
               <ScenarioReviewSheet scenario={scenario} />
             )}
