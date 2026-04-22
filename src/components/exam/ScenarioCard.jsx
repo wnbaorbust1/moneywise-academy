@@ -4,8 +4,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Home, Car, AlertTriangle, FileText,
-  DollarSign, ArrowRight
+  DollarSign, ArrowRight, ShieldCheck
 } from "lucide-react";
+
+function hashCode(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+  }
+  return Math.abs(h).toString(36).toUpperCase().slice(0, 6);
+}
 
 const sectionVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -44,6 +52,8 @@ function ScenarioSection({ icon: Icon, title, description, detail, color, index 
 }
 
 export default function ScenarioCard({ scenario, onContinue }) {
+  const scenarioId = hashCode(scenario.name.toLowerCase().trim() + (scenario.pathId || ""));
+
   const paycheck = scenario.job.payFrequency === "weekly"
     ? Math.round(scenario.monthlyNet / 4.33)
     : scenario.job.payFrequency === "bi-weekly"
@@ -63,6 +73,11 @@ export default function ScenarioCard({ scenario, onContinue }) {
         <p className="text-muted-foreground mt-2 text-sm sm:text-base">
           This is your financial scenario. Read carefully — your exam is based on this story.
         </p>
+        <div className="inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full bg-muted border text-xs text-muted-foreground">
+          <ShieldCheck className="w-3.5 h-3.5 text-primary" />
+          Unique Scenario ID: <strong className="font-mono text-foreground">{scenarioId}</strong>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-1">Your teacher can verify this is your personal scenario — no two students share the same one.</p>
       </motion.div>
 
       <div className="grid gap-3">

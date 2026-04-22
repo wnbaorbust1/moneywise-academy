@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { getLevel, calcFinancialHealthScore, getFinancialHealthLabel } from "@/lib/xpSystem";
 import ClassComparison from "@/components/exam/ClassComparison";
+import PerformanceNarrative from "@/components/exam/PerformanceNarrative";
 import StudentProgressDashboard from "@/components/exam/StudentProgressDashboard";
 import BadgeShowcase from "@/components/exam/BadgeShowcase";
 import { PATHS } from "@/components/exam/PathSelector";
@@ -168,6 +169,8 @@ export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) 
             </div>
           </div>
         </Card>
+
+        <PerformanceNarrative scores={scores} scenario={scenario} />
 
         <StudentProgressDashboard scores={scores} />
 
