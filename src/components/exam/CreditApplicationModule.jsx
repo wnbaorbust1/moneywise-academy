@@ -234,11 +234,25 @@ export default function CreditApplicationModule({ scenario, onComplete }) {
       {/* STEP 1: Application Form */}
       {step === 1 && (
         <div>
-          <Card className="p-4 bg-muted/40 border-dashed mb-5">
+          <Card className="p-4 bg-muted/40 border-dashed mb-3">
             <div className="flex items-start gap-2">
               <Lightbulb className="w-4 h-4 text-accent shrink-0 mt-0.5" />
               <p className="text-sm font-medium">Fill out the secured credit card application for <strong>{scenario.name}</strong>. Use your scenario details where applicable.</p>
             </div>
+          </Card>
+
+          {/* Scenario reference card */}
+          <Card className="p-3 mb-5 border-primary/30 bg-primary/5">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-2">📋 Your Info (use these details)</p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+              <div><span className="text-muted-foreground">Full Name:</span> <strong>{scenario.name}</strong></div>
+              <div><span className="text-muted-foreground">Employer:</span> <strong>{scenario.job.company || scenario.job.title}</strong></div>
+              <div><span className="text-muted-foreground">Annual Income:</span> <strong>${scenario.job.annualSalary.toLocaleString()}</strong></div>
+              <div><span className="text-muted-foreground">Housing Payment:</span> <strong>${scenario.fixedExpenses.rent}/mo</strong></div>
+              <div><span className="text-muted-foreground">Address:</span> <strong>{scenario.address || "123 Main St, Your City, ST 00000"}</strong></div>
+              <div><span className="text-muted-foreground">DOB:</span> <strong>Use your own or a fictional date</strong></div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">SSN: Use a fictional number (e.g., 123-45-6789) for this exercise.</p>
           </Card>
 
           <Card className="p-5 border-2 bg-card">
