@@ -26,7 +26,7 @@ import {
 } from "@/lib/scenarios";
 import { calcXP, getLevel, calcFinancialHealthScore, XP_MILESTONES } from "@/lib/xpSystem";
 import { saveStudentRecord } from "@/lib/storage";
-import { BarChart2 } from "lucide-react";
+import { BarChart2, TrendingUp } from "lucide-react";
 
 // Modules: 0=scenario, 1=budget, 2=taxes, 3=fin literacy, 4=checks, 5=checkbook, 6=bank acct, 7=credit, 8=results
 const TOTAL_MODULES = 8;
@@ -174,6 +174,11 @@ export default function Exam() {
             {currentModule > 0 && currentModule < TOTAL_MODULES && scenario && (
               <ScenarioReviewSheet scenario={scenario} />
             )}
+            <Link to="/career" className="shrink-0">
+              <button className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-colors" title="Career Ladder">
+                <TrendingUp className="w-4 h-4 text-muted-foreground" />
+              </button>
+            </Link>
             <Link to="/teacher" className="shrink-0">
               <button className="p-1.5 rounded-lg bg-muted hover:bg-muted/80 transition-colors" title="Teacher Dashboard">
                 <BarChart2 className="w-4 h-4 text-muted-foreground" />
