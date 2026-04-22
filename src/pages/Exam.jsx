@@ -7,6 +7,8 @@ import QuizModule from "@/components/exam/QuizModule";
 import ResultsSummary from "@/components/exam/ResultsSummary";
 import WriteCheckModule from "@/components/exam/WriteCheckModule";
 import CheckbookModule from "@/components/exam/CheckbookModule";
+import OpenBankAccountModule from "@/components/exam/OpenBankAccountModule";
+import CreditApplicationModule from "@/components/exam/CreditApplicationModule";
 import {
   generateScenario,
   getBudgetQuestions,
@@ -14,7 +16,7 @@ import {
   getFinancialLiteracyQuestions,
 } from "@/lib/scenarios";
 
-// Modules: 0=scenario, 1=budget, 2=taxes, 3=fin literacy, 4=write checks, 5=checkbook, 6=results
+// Modules: 0=scenario, 1=budget, 2=taxes, 3=fin literacy, 4=checks, 5=checkbook, 6=bank acct, 7=credit, 8=results
 export default function Exam() {
   const [studentName, setStudentName] = useState(null);
   const [currentModule, setCurrentModule] = useState(0);
@@ -118,6 +120,24 @@ export default function Exam() {
           )}
 
           {currentModule === 6 && (
+            <motion.div key="bankacct" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <OpenBankAccountModule
+                scenario={scenario}
+                onComplete={handleModuleComplete}
+              />
+            </motion.div>
+          )}
+
+          {currentModule === 7 && (
+            <motion.div key="credit" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <CreditApplicationModule
+                scenario={scenario}
+                onComplete={handleModuleComplete}
+              />
+            </motion.div>
+          )}
+
+          {currentModule === 8 && (
             <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <ResultsSummary
                 scores={scores}

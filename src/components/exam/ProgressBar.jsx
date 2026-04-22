@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
-const modules = ["Your Story", "Budget", "Taxes", "Fin. Literacy", "Checks", "Checkbook", "Results"];
+const modules = ["Story", "Budget", "Taxes", "Fin. Lit.", "Checks", "Checkbook", "Bank Acct", "Credit", "Results"];
 
 export default function ProgressBar({ currentModule }) {
   return (
