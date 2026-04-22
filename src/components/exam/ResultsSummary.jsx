@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { getLevel, calcFinancialHealthScore, getFinancialHealthLabel } from "@/lib/xpSystem";
+import ClassComparison from "@/components/exam/ClassComparison";
+import { PATHS } from "@/components/exam/PathSelector";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -50,6 +52,14 @@ export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) 
         <p className="text-muted-foreground mt-1 text-sm">
           {scenario.name} — {scenario.job.title}
         </p>
+        {scenario.pathId && (() => {
+          const path = PATHS.find((p) => p.id === scenario.pathId);
+          return path ? (
+            <span className={`inline-block mt-2 text-xs font-semibold px-2.5 py-1 rounded-full ${path.badgeClass}`}>
+              {path.emoji} {path.label} Path
+            </span>
+          ) : null;
+        })()}
       </motion.div>
 
       <motion.div
@@ -156,6 +166,8 @@ export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) 
             </div>
           </div>
         </Card>
+
+        <ClassComparison scenario={scenario} scores={scores} xp={xp} />
 
         <Button
           onClick={onRestart}

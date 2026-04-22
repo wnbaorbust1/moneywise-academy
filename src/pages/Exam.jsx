@@ -14,6 +14,7 @@ import XPBar from "@/components/exam/XPBar";
 import GoalsDashboard from "@/components/exam/GoalsDashboard";
 import LevelUpOverlay from "@/components/exam/LevelUpOverlay";
 import MilestoneToast from "@/components/exam/MilestoneToast";
+import PathSelector from "@/components/exam/PathSelector";
 import {
   generateScenario,
   getBudgetQuestions,
@@ -29,6 +30,7 @@ const TOTAL_MODULES = 8;
 
 export default function Exam() {
   const [studentName, setStudentName] = useState(null);
+  const [selectedPath, setSelectedPath] = useState(null); // null = path not chosen yet
   const [currentModule, setCurrentModule] = useState(0);
   const [scores, setScores] = useState([]);
   const [xpGain, setXpGain] = useState(0);
@@ -38,8 +40,8 @@ export default function Exam() {
   const prevXPRef = useRef(0);
 
   const scenario = useMemo(
-    () => (studentName ? generateScenario(studentName) : null),
-    [studentName]
+    () => (studentName && selectedPath ? generateScenario(studentName, selectedPath) : null),
+    [studentName, selectedPath]
   );
 
   const budgetQs = useMemo(() => (scenario ? getBudgetQuestions(scenario) : []), [scenario]);
@@ -61,9 +63,14 @@ export default function Exam() {
 
   const handleStart = (name) => {
     setStudentName(name);
+    setSelectedPath(null); // go to path selection next
     setCurrentModule(0);
     setScores([]);
     prevXPRef.current = 0;
+  };
+
+  const handlePathSelect = (pathId) => {
+    setSelectedPath(pathId);
   };
 
   const handleModuleComplete = (result) => {
@@ -100,6 +107,7 @@ export default function Exam() {
       saveStudentRecord({
         name: scenario.name,
         job: scenario.job.title,
+        pathId: scenario.pathId,
         xp: currentXP,
         scores,
         totalCorrect,
@@ -113,6 +121,7 @@ export default function Exam() {
 
   const handleRestart = () => {
     setStudentName(null);
+    setSelectedPath(null);
     setCurrentModule(0);
     setScores([]);
     prevXPRef.current = 0;
@@ -120,6 +129,10 @@ export default function Exam() {
 
   if (!studentName) {
     return <WelcomeScreen onStart={handleStart} />;
+  }
+
+  if (!selectedPath) {
+    return <PathSelector name={studentName} onSelect={handlePathSelect} />;
   }
 
   const modulesCompleted = scores.length;

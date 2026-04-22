@@ -65,7 +65,7 @@ function hashString(str) {
   return Math.abs(hash);
 }
 
-export function generateScenario(studentName) {
+export function generateScenario(studentName, pathId = "conservative") {
   const seed = hashString(studentName.toLowerCase().trim());
   const rand = seededRandom(seed);
 
@@ -75,12 +75,27 @@ export function generateScenario(studentName) {
   const lifeEvent = lifeEvents[Math.floor(rand() * lifeEvents.length)];
   const filingStatus = filingStatuses[Math.floor(rand() * filingStatuses.length)];
 
-  const monthlyGross = Math.round(job.annualSalary / 12);
-  const federalTaxRate = job.annualSalary > 44725 ? 0.22 : job.annualSalary > 11000 ? 0.12 : 0.10;
+  // Path modifiers — imported lazily to avoid circular deps
+  const pathModifiers = {
+    conservative: { salaryMult: 0.92, debtMult: 0.55, startingDebt: 1800, emergencyTarget: 1000 },
+    aggressive:   { salaryMult: 1.18, debtMult: 1.60, startingDebt: 7500, emergencyTarget: 3000 },
+    entrepreneurial: { salaryMult: 1.0, debtMult: 1.0, startingDebt: 4200, emergencyTarget: 2000, sideIncome: true },
+  };
+  const mods = pathModifiers[pathId] || pathModifiers.conservative;
+
+  const baseAnnualSalary = Math.round(job.annualSalary * mods.salaryMult);
+  const monthlyGross = Math.round(baseAnnualSalary / 12);
+
+  // Entrepreneurial gets bonus side income
+  const sideIncomeMonthly = mods.sideIncome ? Math.round(monthlyGross * 0.15) : 0;
+
+  const federalTaxRate = baseAnnualSalary > 44725 ? 0.22 : baseAnnualSalary > 11000 ? 0.12 : 0.10;
   const stateTaxRate = 0.05;
   const ficaRate = 0.0765;
   const totalDeductions = federalTaxRate + stateTaxRate + ficaRate;
-  const monthlyNet = Math.round(monthlyGross * (1 - totalDeductions));
+  const monthlyNet = Math.round((monthlyGross + sideIncomeMonthly) * (1 - totalDeductions));
+
+  const adjustedDebtPayment = Math.round(lifeEvent.monthlyPayment * mods.debtMult);
 
   const fixedExpenses = {
     rent: living.monthlyRent,
@@ -91,21 +106,30 @@ export function generateScenario(studentName) {
     phone: 65,
     groceries: 280,
     healthInsurance: Math.round(monthlyGross * 0.04),
-    debtPayment: lifeEvent.monthlyPayment,
+    debtPayment: adjustedDebtPayment,
   };
 
   const totalFixed = Object.values(fixedExpenses).reduce((a, b) => a + b, 0);
   const discretionary = monthlyNet - totalFixed;
 
+  // Override life event debt amount to match path
+  const adjustedLifeEvent = {
+    ...lifeEvent,
+    monthlyPayment: adjustedDebtPayment,
+    startingDebt: mods.startingDebt,
+  };
+
   return {
     name: studentName,
-    job,
+    pathId,
+    job: { ...job, annualSalary: baseAnnualSalary },
     living,
     vehicle,
-    lifeEvent,
+    lifeEvent: adjustedLifeEvent,
     filingStatus,
     monthlyGross,
     monthlyNet,
+    sideIncomeMonthly,
     federalTaxRate,
     stateTaxRate,
     ficaRate,
@@ -113,6 +137,7 @@ export function generateScenario(studentName) {
     totalFixed,
     discretionary,
     savingsGoal: lifeEvent.savingsGoal || 0,
+    emergencyFundTarget: mods.emergencyTarget,
   };
 }
 
