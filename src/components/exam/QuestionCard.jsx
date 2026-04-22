@@ -17,7 +17,9 @@ export default function QuestionCard({
 
   const isCorrect = selected === question.correctIndex;
 
-  const handleConfirm = () => {
+  const handleSelect = (idx) => {
+    if (confirmed) return;
+    setSelected(idx);
     setConfirmed(true);
   };
 
@@ -76,7 +78,7 @@ export default function QuestionCard({
           return (
             <button
               key={idx}
-              onClick={() => !confirmed && setSelected(idx)}
+              onClick={() => handleSelect(idx)}
               disabled={confirmed}
               className={`w-full text-left p-3.5 sm:p-4 rounded-xl border-2 transition-all duration-200 ${optionStyle}`}
             >
@@ -145,15 +147,7 @@ export default function QuestionCard({
       </AnimatePresence>
 
       <div className="mt-5">
-        {!confirmed ? (
-          <Button
-            onClick={handleConfirm}
-            disabled={selected === null}
-            className="w-full h-11 text-sm gap-2"
-          >
-            <Lightbulb className="w-4 h-4" /> Lock In Answer
-          </Button>
-        ) : (
+        {confirmed && (
           <Button onClick={handleNext} className="w-full h-11 text-sm gap-2">
             {questionNumber < totalQuestions ? "Next Question" : "Continue"}{" "}
             <ArrowRight className="w-4 h-4" />
