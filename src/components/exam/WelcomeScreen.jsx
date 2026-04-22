@@ -5,12 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sparkles, ArrowRight, DollarSign, PiggyBank, Receipt } from "lucide-react";
 
+const CLASS_PERIODS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
+
 export default function WelcomeScreen({ onStart }) {
   const [name, setName] = useState("");
+  const [period, setPeriod] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (name.trim()) onStart(name.trim());
+    if (name.trim() && period) onStart(name.trim(), period);
   };
 
   return (
@@ -78,9 +81,30 @@ export default function WelcomeScreen({ onStart }) {
                 Each name generates a different scenario — use your real name!
               </p>
             </div>
+            <div className="text-left">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Class Period
+              </label>
+              <div className="grid grid-cols-4 gap-2">
+                {CLASS_PERIODS.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPeriod(p)}
+                    className={`h-10 rounded-lg text-sm font-semibold border transition-all ${
+                      period === p
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background border-input text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    {p}
+                  </button>
+                ))}
+              </div>
+            </div>
             <Button
               type="submit"
-              disabled={!name.trim()}
+              disabled={!name.trim() || !period}
               className="w-full h-12 text-base gap-2"
             >
               Start My Exam <ArrowRight className="w-4 h-4" />

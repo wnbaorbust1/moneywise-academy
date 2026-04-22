@@ -30,6 +30,7 @@ const TOTAL_MODULES = 8;
 
 export default function Exam() {
   const [studentName, setStudentName] = useState(null);
+  const [classPeriod, setClassPeriod] = useState(null);
   const [selectedPath, setSelectedPath] = useState(null); // null = path not chosen yet
   const [currentModule, setCurrentModule] = useState(0);
   const [scores, setScores] = useState([]);
@@ -61,9 +62,10 @@ export default function Exam() {
     prevXPRef.current = currentXP;
   }, [currentXP]);
 
-  const handleStart = (name) => {
+  const handleStart = (name, period) => {
     setStudentName(name);
-    setSelectedPath(null); // go to path selection next
+    setClassPeriod(period);
+    setSelectedPath(null);
     setCurrentModule(0);
     setScores([]);
     prevXPRef.current = 0;
@@ -108,6 +110,7 @@ export default function Exam() {
         name: scenario.name,
         job: scenario.job.title,
         pathId: scenario.pathId,
+        classPeriod,
         xp: currentXP,
         scores,
         totalCorrect,
@@ -121,6 +124,7 @@ export default function Exam() {
 
   const handleRestart = () => {
     setStudentName(null);
+    setClassPeriod(null);
     setSelectedPath(null);
     setCurrentModule(0);
     setScores([]);

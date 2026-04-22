@@ -43,6 +43,7 @@ export default function TeacherDashboard() {
   const [pinError, setPinError] = useState(false);
   const [students, setStudents] = useState([]);
   const [tab, setTab] = useState("leaderboard"); // leaderboard | class | modules
+  const [filterPeriod, setFilterPeriod] = useState("All");
 
   const load = () => setStudents(getAllStudents().sort((a, b) => b.xp - a.xp));
 
@@ -93,16 +94,23 @@ export default function TeacherDashboard() {
     );
   }
 
-  const avgXP = students.length ? Math.round(students.reduce((a, s) => a + s.xp, 0) / students.length) : 0;
-  const avgPct = students.length
-    ? Math.round(students.reduce((a, s) => a + (s.totalCorrect / Math.max(1, s.totalQuestions)) * 100, 0) / students.length)
+  // Derive all unique class periods, sorted
+  const allPeriods = ["All", ...Array.from(new Set(students.map((s) => s.classPeriod).filter(Boolean))).sort()];
+
+  const filteredStudents = filterPeriod === "All"
+    ? students
+    : students.filter((s) => s.classPeriod === filterPeriod);
+
+  const avgXP = filteredStudents.length ? Math.round(filteredStudents.reduce((a, s) => a + s.xp, 0) / filteredStudents.length) : 0;
+  const avgPct = filteredStudents.length
+    ? Math.round(filteredStudents.reduce((a, s) => a + (s.totalCorrect / Math.max(1, s.totalQuestions)) * 100, 0) / filteredStudents.length)
     : 0;
-  const completedAll = students.filter((s) => s.modulesCompleted >= 8).length;
+  const completedAll = filteredStudents.filter((s) => s.modulesCompleted >= 8).length;
 
   // Module performance across all students
   const moduleNames = ["Budget Building", "Tax Filing", "Financial Literacy", "Writing Checks", "Checkbook Balancing", "Opening a Bank Account", "Credit Application"];
   const moduleStats = moduleNames.map((name) => {
-    const scored = students.flatMap((s) => (s.scores || []).filter((sc) => sc.module === name));
+    const scored = filteredStudents.flatMap((s) => (s.scores || []).filter((sc) => sc.module === name));
     const avg = scored.length ? Math.round(scored.reduce((a, sc) => a + (sc.correct / sc.total) * 100, 0) / scored.length) : null;
     return { name, avg, count: scored.length };
   });
@@ -135,9 +143,29 @@ export default function TeacherDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
+        {/* Period filter */}
+        {allPeriods.length > 1 && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-xs font-semibold text-muted-foreground shrink-0">Class Period:</span>
+            {allPeriods.map((p) => (
+              <button
+                key={p}
+                onClick={() => setFilterPeriod(p)}
+                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
+                  filterPeriod === p
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background border-border text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {p === "All" ? "All Periods" : `${p} Period`}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <StatCard icon={Users} label="Total Students" value={students.length} color="bg-primary" />
+          <StatCard icon={Users} label="Total Students" value={filteredStudents.length} color="bg-primary" />
           <StatCard icon={Zap} label="Avg XP" value={avgXP} sub="per student" color="bg-accent" />
           <StatCard icon={TrendingUp} label="Avg Score" value={`${avgPct}%`} sub="accuracy" color="bg-chart-3" />
           <StatCard icon={CheckCircle2} label="Finished Exam" value={completedAll} sub="all modules done" color="bg-chart-4" />
@@ -163,13 +191,13 @@ export default function TeacherDashboard() {
         {/* LEADERBOARD */}
         {tab === "leaderboard" && (
           <div className="space-y-3">
-            {students.length === 0 ? (
+            {filteredStudents.length === 0 ? (
               <Card className="p-8 text-center text-muted-foreground">
                 <Trophy className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">No students have completed the exam yet.</p>
               </Card>
             ) : (
-              students.map((s, idx) => {
+              filteredStudents.map((s, idx) => {
                 const levelInfo = getLevel(s.xp);
                 const healthScore = s.healthScore || 0;
                 const healthLabel = getFinancialHealthLabel(healthScore);
@@ -202,7 +230,7 @@ export default function TeacherDashboard() {
                               {levelInfo.title}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground">{s.job} · {pct}% accuracy</p>
+                          <p className="text-xs text-muted-foreground">{s.job} · {pct}% accuracy{s.classPeriod ? ` · ${s.classPeriod} Period` : ""}</p>
                         </div>
 
                         <div className="text-right shrink-0 space-y-1">
@@ -280,7 +308,7 @@ export default function TeacherDashboard() {
                 <Trash2 className="w-3 h-3" /> Clear All Records
               </Button>
             </div>
-            {students.length === 0 ? (
+            {filteredStudents.length === 0 ? (
               <Card className="p-8 text-center text-muted-foreground">
                 <Users className="w-8 h-8 mx-auto mb-2 opacity-30" />
                 <p className="text-sm">No students yet.</p>
@@ -291,6 +319,7 @@ export default function TeacherDashboard() {
                   <thead>
                     <tr className="text-left border-b">
                       <th className="pb-2 font-semibold text-xs text-muted-foreground">Name</th>
+                      <th className="pb-2 font-semibold text-xs text-muted-foreground">Period</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground">Job</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">XP</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Level</th>
@@ -300,13 +329,18 @@ export default function TeacherDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.map((s, idx) => {
+                    {filteredStudents.map((s, idx) => {
                       const levelInfo = getLevel(s.xp);
                       const pct = Math.round((s.totalCorrect / Math.max(1, s.totalQuestions)) * 100);
                       const healthLabel = getFinancialHealthLabel(s.healthScore || 0);
                       return (
                         <tr key={s.name} className={`border-b last:border-0 ${idx % 2 === 0 ? "bg-muted/20" : ""}`}>
                           <td className="py-2.5 font-medium">{s.name}</td>
+                          <td className="py-2.5 text-xs text-center">
+                            {s.classPeriod ? (
+                              <span className="px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-semibold">{s.classPeriod}</span>
+                            ) : "—"}
+                          </td>
                           <td className="py-2.5 text-xs text-muted-foreground">{s.job}</td>
                           <td className="py-2.5 text-center">
                             <span className="font-bold">{s.xp}</span>
