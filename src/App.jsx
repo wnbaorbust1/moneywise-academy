@@ -37,7 +37,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Exam />} />
-      <Route path="/teacher" element={<TeacherDashboard key={Date.now()} />} />
+      <Route path="/teacher" element={<TeacherDashboard />} />
       <Route path="/career" element={<CareerLadder />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
