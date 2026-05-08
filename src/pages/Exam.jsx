@@ -16,6 +16,7 @@ import LevelUpOverlay from "@/components/exam/LevelUpOverlay";
 import MilestoneToast from "@/components/exam/MilestoneToast";
 import PathSelector from "@/components/exam/PathSelector";
 import ScenarioReviewSheet from "@/components/exam/ScenarioReviewSheet";
+import ScenarioTab from "@/components/exam/ScenarioTab";
 import EducationHubSheet from "@/components/exam/EducationHubSheet";
 import { BadgeUnlockOverlay, getEarnedBadges } from "@/components/exam/BadgeShowcase";
 import {
@@ -199,7 +200,11 @@ export default function Exam() {
         )}
       </div>
 
-      <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8">
+      {currentModule > 0 && currentModule < TOTAL_MODULES && scenario && (
+        <ScenarioTab scenario={scenario} />
+      )}
+
+      <div className="max-w-2xl mx-auto px-4 py-6 sm:py-8 pb-16">
         <AnimatePresence mode="wait">
           {currentModule === 0 && (
             <motion.div key="scenario" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
