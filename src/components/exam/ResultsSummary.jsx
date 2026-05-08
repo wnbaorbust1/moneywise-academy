@@ -9,6 +9,7 @@ import { PATHS } from "@/components/exam/PathSelector";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import CertificateGenerator from "@/components/exam/CertificateGenerator";
 import {
   Trophy, Star, Target, RotateCcw,
   TrendingUp, Wallet, FileText, Brain, PenLine, BookOpen, Landmark, CreditCard, Zap,
@@ -180,6 +181,8 @@ export default function ResultsSummary({ scores, scenario, onRestart, xp = 0, cl
         <ClassComparison scenario={scenario} scores={scores} xp={xp} />
 
         <TeacherReport scores={scores} scenario={scenario} xp={xp} classPeriod={classPeriod} />
+
+        <CertificateGenerator scenario={scenario} scores={scores} xp={xp} levelInfo={levelInfo} />
 
         <Button
           onClick={onRestart}
