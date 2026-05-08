@@ -120,6 +120,8 @@ export default function Exam() {
     if (currentModule === TOTAL_MODULES && scores.length > 0 && scenario) {
       const totalCorrect = scores.reduce((a, s) => a + s.correct, 0);
       const totalQuestions = scores.reduce((a, s) => a + s.total, 0);
+      const pct = Math.round((totalCorrect / totalQuestions) * 100);
+      const grade = pct >= 93 ? "A" : pct >= 85 ? "B+" : pct >= 77 ? "B" : pct >= 70 ? "C+" : pct >= 60 ? "C" : "F";
       saveStudentRecord({
         name: scenario.name,
         job: scenario.job.title,
@@ -129,6 +131,8 @@ export default function Exam() {
         scores,
         totalCorrect,
         totalQuestions,
+        grade,
+        percentage: pct,
         modulesCompleted: scores.length,
         healthScore: calcFinancialHealthScore(scores, scenario),
         completedAt: Date.now(),
@@ -248,7 +252,7 @@ export default function Exam() {
           )}
           {currentModule === 8 && (
             <motion.div key="results" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <ResultsSummary scores={scores} scenario={scenario} onRestart={handleRestart} xp={currentXP} />
+              <ResultsSummary scores={scores} scenario={scenario} onRestart={handleRestart} xp={currentXP} classPeriod={classPeriod} />
             </motion.div>
           )}
         </AnimatePresence>

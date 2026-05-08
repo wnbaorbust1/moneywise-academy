@@ -232,7 +232,7 @@ export default function TeacherDashboard() {
                               {levelInfo.title}
                             </Badge>
                           </div>
-                          <p className="text-xs text-muted-foreground">{s.job} · {pct}% accuracy{s.classPeriod ? ` · ${s.classPeriod} Period` : ""}</p>
+                          <p className="text-xs text-muted-foreground">{s.job} · {pct}% ({s.grade || (pct >= 93 ? "A" : pct >= 85 ? "B+" : pct >= 77 ? "B" : pct >= 70 ? "C+" : pct >= 60 ? "C" : "F")}){s.classPeriod ? ` · ${s.classPeriod} Period` : ""}</p>
                         </div>
 
                         <div className="text-right shrink-0 space-y-1">
@@ -326,6 +326,7 @@ export default function TeacherDashboard() {
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">XP</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Level</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Score%</th>
+                      <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Grade</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Modules</th>
                       <th className="pb-2 font-semibold text-xs text-muted-foreground text-center">Fin. Health</th>
                     </tr>
@@ -356,6 +357,11 @@ export default function TeacherDashboard() {
                             <Badge variant={pct >= 80 ? "default" : pct >= 60 ? "secondary" : "destructive"} className="text-xs">
                               {pct}%
                             </Badge>
+                          </td>
+                          <td className="py-2.5 text-center">
+                            <span className={`font-bold text-xs ${pct >= 70 ? 'text-primary' : pct >= 60 ? 'text-accent' : 'text-destructive'}`}>
+                              {s.grade || (pct >= 93 ? "A" : pct >= 85 ? "B+" : pct >= 77 ? "B" : pct >= 70 ? "C+" : pct >= 60 ? "C" : "F")}
+                            </span>
                           </td>
                           <td className="py-2.5 text-center text-xs">{s.modulesCompleted || 0}/8</td>
                           <td className={`py-2.5 text-center text-xs font-semibold ${healthLabel.color}`}>

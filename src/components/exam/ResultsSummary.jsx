@@ -4,6 +4,7 @@ import ClassComparison from "@/components/exam/ClassComparison";
 import PerformanceNarrative from "@/components/exam/PerformanceNarrative";
 import StudentProgressDashboard from "@/components/exam/StudentProgressDashboard";
 import BadgeShowcase from "@/components/exam/BadgeShowcase";
+import TeacherReport from "@/components/exam/TeacherReport";
 import { PATHS } from "@/components/exam/PathSelector";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -32,7 +33,7 @@ const moduleIcons = {
   "Credit Application": CreditCard,
 };
 
-export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) {
+export default function ResultsSummary({ scores, scenario, onRestart, xp = 0, classPeriod }) {
   const totalCorrect = scores.reduce((sum, s) => sum + s.correct, 0);
   const totalQuestions = scores.reduce((sum, s) => sum + s.total, 0);
   const percentage = Math.round((totalCorrect / totalQuestions) * 100);
@@ -177,6 +178,8 @@ export default function ResultsSummary({ scores, scenario, onRestart, xp = 0 }) 
         <BadgeShowcase xp={xp} scores={scores} />
 
         <ClassComparison scenario={scenario} scores={scores} xp={xp} />
+
+        <TeacherReport scores={scores} scenario={scenario} xp={xp} classPeriod={classPeriod} />
 
         <Button
           onClick={onRestart}
