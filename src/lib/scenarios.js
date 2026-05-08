@@ -14,12 +14,12 @@ const jobs = [
 ];
 
 const livingSituations = [
-  { description: "You rent a 1-bedroom apartment by yourself.", monthlyRent: 950, utilities: 120 },
-  { description: "You share a 2-bedroom apartment with a roommate.", monthlyRent: 600, utilities: 80 },
-  { description: "You live in a studio apartment downtown.", monthlyRent: 1100, utilities: 100 },
-  { description: "You rent a small house in the suburbs.", monthlyRent: 1200, utilities: 160 },
-  { description: "You live with family and pay reduced rent.", monthlyRent: 400, utilities: 50 },
-  { description: "You share a house with two roommates.", monthlyRent: 500, utilities: 65 },
+  { description: "You rent a 1-bedroom apartment by yourself.", monthlyRent: 950, utilities: 120, landlord: "Greenview Property Management", utilityCompany: "CityLight & Power" },
+  { description: "You share a 2-bedroom apartment with a roommate.", monthlyRent: 600, utilities: 80, landlord: "Oakwood Rentals LLC", utilityCompany: "Metro Energy Services" },
+  { description: "You live in a studio apartment downtown.", monthlyRent: 1100, utilities: 100, landlord: "Downtown Living Co.", utilityCompany: "Apex Utilities Inc." },
+  { description: "You rent a small house in the suburbs.", monthlyRent: 1200, utilities: 160, landlord: "Sunrise Home Rentals", utilityCompany: "Suburban Power & Gas" },
+  { description: "You live with family and pay reduced rent.", monthlyRent: 400, utilities: 50, landlord: "Family (personal arrangement)", utilityCompany: "CityLight & Power" },
+  { description: "You share a house with two roommates.", monthlyRent: 500, utilities: 65, landlord: "Maplewood Properties", utilityCompany: "Tri-County Electric" },
 ];
 
 const vehicles = [

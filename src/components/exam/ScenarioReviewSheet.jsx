@@ -55,7 +55,7 @@ export default function ScenarioReviewSheet({ scenario }) {
             icon={Home}
             title="Your Housing"
             description={scenario.living.description}
-            detail={`Rent: $${scenario.fixedExpenses.rent}/mo · Utilities: $${scenario.fixedExpenses.utilities}/mo`}
+            detail={`Landlord: ${scenario.living.landlord} · Rent: $${scenario.fixedExpenses.rent}/mo · Utilities: $${scenario.fixedExpenses.utilities}/mo (${scenario.living.utilityCompany})`}
             color="bg-accent"
           />
           <Row
