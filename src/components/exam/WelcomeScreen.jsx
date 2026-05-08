@@ -132,7 +132,7 @@ export default function WelcomeScreen({ onStart }) {
         <div className="mt-6">
           <Link to="/teacher">
             <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-              <BarChart2 className="w-3.5 h-3.5" /> Teacher Login
+              <BarChart2 className="w-3.5 h-3.5" /> Teacher Dashboard
             </Button>
           </Link>
         </div>

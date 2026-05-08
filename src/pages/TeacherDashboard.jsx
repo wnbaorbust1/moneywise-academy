@@ -3,18 +3,15 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Trophy, Users, TrendingUp, BarChart2, RefreshCw,
-  Trash2, Medal, Star, Zap, ArrowLeft, Lock, CheckCircle2,
+  Trash2, Medal, Star, Zap, ArrowLeft, CheckCircle2,
   AlertTriangle, Crown
 } from "lucide-react";
 import { getAllStudents, clearAllStudents } from "@/lib/storage";
 import ExportButton from "@/components/teacher/ExportButton";
 import { getLevel, getFinancialHealthLabel, calcFinancialHealthScore, LEVELS } from "@/lib/xpSystem";
 import { Link } from "react-router-dom";
-
-const TEACHER_PIN = "1234"; // simple classroom PIN
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
@@ -39,21 +36,13 @@ function RankBadge({ rank }) {
 }
 
 export default function TeacherDashboard() {
-  const [pin, setPin] = useState("");
-  const [unlocked, setUnlocked] = useState(false);
-  const [pinError, setPinError] = useState(false);
   const [students, setStudents] = useState([]);
-  const [tab, setTab] = useState("leaderboard"); // leaderboard | class | modules
+  const [tab, setTab] = useState("leaderboard");
   const [filterPeriod, setFilterPeriod] = useState("All");
 
   const load = () => setStudents(getAllStudents().sort((a, b) => b.xp - a.xp));
 
-  useEffect(() => { if (unlocked) load(); }, [unlocked]);
-
-  const handlePin = () => {
-    if (pin === TEACHER_PIN) { setUnlocked(true); setPinError(false); }
-    else { setPinError(true); setPin(""); }
-  };
+  useEffect(() => { load(); }, []);
 
   const handleClear = () => {
     if (confirm("Clear ALL student records? This cannot be undone.")) {
@@ -62,40 +51,6 @@ export default function TeacherDashboard() {
     }
   };
 
-  if (!unlocked) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
-          <Card className="p-6 text-center">
-            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-7 h-7 text-primary" />
-            </div>
-            <h2 className="font-display text-xl font-bold mb-1">Teacher Dashboard</h2>
-            <p className="text-sm text-muted-foreground mb-5">Enter your classroom PIN to view student data.</p>
-            <Input
-              type="password"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handlePin()}
-              placeholder="Enter PIN"
-              className={`h-11 text-center text-xl tracking-widest mb-3 ${pinError ? "border-destructive" : ""}`}
-              maxLength={6}
-            />
-            {pinError && <p className="text-xs text-destructive mb-3">Incorrect PIN. Try again.</p>}
-            <Button onClick={handlePin} className="w-full h-11">Unlock Dashboard</Button>
-            <div className="mt-4">
-              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground flex items-center justify-center gap-1">
-                <ArrowLeft className="w-3 h-3" /> Back to Student Exam
-              </Link>
-            </div>
-            <p className="text-[10px] text-muted-foreground mt-4">Default PIN: 1234</p>
-          </Card>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Derive all unique class periods, sorted
   const allPeriods = ["All", ...Array.from(new Set(students.map((s) => s.classPeriod).filter(Boolean))).sort()];
 
   const filteredStudents = filterPeriod === "All"
@@ -108,7 +63,6 @@ export default function TeacherDashboard() {
     : 0;
   const completedAll = filteredStudents.filter((s) => s.modulesCompleted >= 8).length;
 
-  // Module performance across all students
   const moduleNames = ["Budget Building", "Tax Filing", "Financial Literacy", "Writing Checks", "Checkbook Balancing", "Opening a Bank Account", "Credit Application"];
   const moduleStats = moduleNames.map((name) => {
     const scored = filteredStudents.flatMap((s) => (s.scores || []).filter((sc) => sc.module === name));
@@ -216,15 +170,12 @@ export default function TeacherDashboard() {
                         <div className="flex items-center justify-center w-8 shrink-0">
                           <RankBadge rank={idx + 1} />
                         </div>
-
-                        {/* Avatar / level */}
                         <div
                           className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
                           style={{ backgroundColor: levelInfo.color }}
                         >
                           {levelInfo.level}
                         </div>
-
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-semibold text-sm truncate">{s.name}</span>
@@ -234,7 +185,6 @@ export default function TeacherDashboard() {
                           </div>
                           <p className="text-xs text-muted-foreground">{s.job} · {pct}% ({s.grade || (pct >= 93 ? "A" : pct >= 85 ? "B+" : pct >= 77 ? "B" : pct >= 70 ? "C+" : pct >= 60 ? "C" : "F")}){s.classPeriod ? ` · ${s.classPeriod} Period` : ""}</p>
                         </div>
-
                         <div className="text-right shrink-0 space-y-1">
                           <div className="flex items-center justify-end gap-1">
                             <Zap className="w-3 h-3 text-yellow-500" />
@@ -247,8 +197,6 @@ export default function TeacherDashboard() {
                           )}
                         </div>
                       </div>
-
-                      {/* XP progress bar */}
                       <div className="mt-3 w-full bg-muted rounded-full h-1.5 overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
