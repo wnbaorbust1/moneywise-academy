@@ -3,15 +3,18 @@ import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Trophy, Users, TrendingUp, BarChart2, RefreshCw,
-  Trash2, Medal, Star, Zap, ArrowLeft, CheckCircle2,
+  Trash2, Medal, Zap, ArrowLeft, Lock, CheckCircle2,
   AlertTriangle, Crown
 } from "lucide-react";
 import { getAllStudents, clearAllStudents } from "@/lib/storage";
 import ExportButton from "@/components/teacher/ExportButton";
-import { getLevel, getFinancialHealthLabel, calcFinancialHealthScore, LEVELS } from "@/lib/xpSystem";
+import { getLevel, getFinancialHealthLabel } from "@/lib/xpSystem";
 import { Link } from "react-router-dom";
+
+const TEACHER_PIN = "1234";
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
@@ -36,13 +39,21 @@ function RankBadge({ rank }) {
 }
 
 export default function TeacherDashboard() {
+  const [pin, setPin] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
+  const [pinError, setPinError] = useState(false);
   const [students, setStudents] = useState([]);
   const [tab, setTab] = useState("leaderboard");
   const [filterPeriod, setFilterPeriod] = useState("All");
 
   const load = () => setStudents(getAllStudents().sort((a, b) => b.xp - a.xp));
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { if (unlocked) load(); }, [unlocked]);
+
+  const handlePin = () => {
+    if (pin === TEACHER_PIN) { setUnlocked(true); setPinError(false); }
+    else { setPinError(true); setPin(""); }
+  };
 
   const handleClear = () => {
     if (confirm("Clear ALL student records? This cannot be undone.")) {
@@ -50,6 +61,38 @@ export default function TeacherDashboard() {
       load();
     }
   };
+
+  if (!unlocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-sm">
+          <Card className="p-6 text-center">
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-7 h-7 text-primary" />
+            </div>
+            <h2 className="font-display text-xl font-bold mb-1">Teacher Dashboard</h2>
+            <p className="text-sm text-muted-foreground mb-5">Enter your PIN to access student data.</p>
+            <Input
+              type="password"
+              value={pin}
+              onChange={(e) => setPin(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handlePin()}
+              placeholder="Enter PIN"
+              className={`h-11 text-center text-xl tracking-widest mb-3 ${pinError ? "border-destructive" : ""}`}
+              maxLength={6}
+            />
+            {pinError && <p className="text-xs text-destructive mb-3">Incorrect PIN. Try again.</p>}
+            <Button onClick={handlePin} className="w-full h-11">Unlock Dashboard</Button>
+            <div className="mt-4">
+              <Link to="/" className="text-xs text-muted-foreground hover:text-foreground flex items-center justify-center gap-1">
+                <ArrowLeft className="w-3 h-3" /> Back to Student Exam
+              </Link>
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+    );
+  }
 
   const allPeriods = ["All", ...Array.from(new Set(students.map((s) => s.classPeriod).filter(Boolean))).sort()];
 
@@ -72,7 +115,6 @@ export default function TeacherDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="sticky top-0 z-10 bg-background/90 backdrop-blur-lg border-b border-border/50">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -99,7 +141,6 @@ export default function TeacherDashboard() {
       </div>
 
       <div className="max-w-4xl mx-auto px-4 py-6 space-y-6">
-        {/* Period filter */}
         {allPeriods.length > 1 && (
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-semibold text-muted-foreground shrink-0">Class Period:</span>
@@ -119,7 +160,6 @@ export default function TeacherDashboard() {
           </div>
         )}
 
-        {/* Stats row */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <StatCard icon={Users} label="Total Students" value={filteredStudents.length} color="bg-primary" />
           <StatCard icon={Zap} label="Avg XP" value={avgXP} sub="per student" color="bg-accent" />
@@ -127,7 +167,6 @@ export default function TeacherDashboard() {
           <StatCard icon={CheckCircle2} label="Finished Exam" value={completedAll} sub="all modules done" color="bg-chart-4" />
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-1 p-1 bg-muted rounded-xl w-fit">
           {[
             { id: "leaderboard", label: "🏆 Leaderboard" },
@@ -144,7 +183,6 @@ export default function TeacherDashboard() {
           ))}
         </div>
 
-        {/* LEADERBOARD */}
         {tab === "leaderboard" && (
           <div className="space-y-3">
             {filteredStudents.length === 0 ? (
@@ -159,21 +197,13 @@ export default function TeacherDashboard() {
                 const healthLabel = getFinancialHealthLabel(healthScore);
                 const pct = Math.round((s.totalCorrect / Math.max(1, s.totalQuestions)) * 100);
                 return (
-                  <motion.div
-                    key={s.name}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                  >
+                  <motion.div key={s.name} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.05 }}>
                     <Card className={`p-4 ${idx === 0 ? "border-yellow-300 bg-yellow-50/30" : idx === 1 ? "border-slate-300 bg-slate-50/30" : idx === 2 ? "border-amber-300 bg-amber-50/30" : ""}`}>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-8 shrink-0">
                           <RankBadge rank={idx + 1} />
                         </div>
-                        <div
-                          className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0"
-                          style={{ backgroundColor: levelInfo.color }}
-                        >
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0" style={{ backgroundColor: levelInfo.color }}>
                           {levelInfo.level}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -191,17 +221,12 @@ export default function TeacherDashboard() {
                             <span className="text-sm font-bold">{s.xp} XP</span>
                           </div>
                           {healthScore > 0 && (
-                            <p className={`text-xs font-semibold ${healthLabel.color}`}>
-                              {healthScore} FS
-                            </p>
+                            <p className={`text-xs font-semibold ${healthLabel.color}`}>{healthScore} FS</p>
                           )}
                         </div>
                       </div>
                       <div className="mt-3 w-full bg-muted rounded-full h-1.5 overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all"
-                          style={{ width: `${levelInfo.progress}%`, backgroundColor: levelInfo.color }}
-                        />
+                        <div className="h-full rounded-full transition-all" style={{ width: `${levelInfo.progress}%`, backgroundColor: levelInfo.color }} />
                       </div>
                     </Card>
                   </motion.div>
@@ -211,7 +236,6 @@ export default function TeacherDashboard() {
           </div>
         )}
 
-        {/* MODULE STATS */}
         {tab === "modules" && (
           <div className="space-y-3">
             {moduleStats.map((m, idx) => (
@@ -250,7 +274,6 @@ export default function TeacherDashboard() {
           </div>
         )}
 
-        {/* CLASS LIST */}
         {tab === "class" && (
           <div className="space-y-3">
             <div className="flex justify-end">
@@ -293,18 +316,12 @@ export default function TeacherDashboard() {
                             ) : "—"}
                           </td>
                           <td className="py-2.5 text-xs text-muted-foreground">{s.job}</td>
+                          <td className="py-2.5 text-center"><span className="font-bold">{s.xp}</span></td>
                           <td className="py-2.5 text-center">
-                            <span className="font-bold">{s.xp}</span>
+                            <span className="text-xs font-semibold" style={{ color: levelInfo.color }}>L{levelInfo.level} {levelInfo.title}</span>
                           </td>
                           <td className="py-2.5 text-center">
-                            <span className="text-xs font-semibold" style={{ color: levelInfo.color }}>
-                              L{levelInfo.level} {levelInfo.title}
-                            </span>
-                          </td>
-                          <td className="py-2.5 text-center">
-                            <Badge variant={pct >= 80 ? "default" : pct >= 60 ? "secondary" : "destructive"} className="text-xs">
-                              {pct}%
-                            </Badge>
+                            <Badge variant={pct >= 80 ? "default" : pct >= 60 ? "secondary" : "destructive"} className="text-xs">{pct}%</Badge>
                           </td>
                           <td className="py-2.5 text-center">
                             <span className={`font-bold text-xs ${pct >= 70 ? 'text-primary' : pct >= 60 ? 'text-accent' : 'text-destructive'}`}>
