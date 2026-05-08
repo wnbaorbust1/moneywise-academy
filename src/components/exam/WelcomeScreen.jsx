@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Sparkles, ArrowRight, DollarSign, PiggyBank, Receipt } from "lucide-react";
+import { Sparkles, ArrowRight, DollarSign, PiggyBank, Receipt, BarChart2 } from "lucide-react";
 
 const CLASS_PERIODS = ["1st", "2nd", "3rd", "4th", "5th", "6th", "7th", "8th"];
 
@@ -126,6 +127,14 @@ export default function WelcomeScreen({ onStart }) {
               <p className="text-xs font-medium text-muted-foreground">{item.label}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-6">
+          <Link to="/teacher">
+            <Button variant="ghost" size="sm" className="gap-1.5 text-xs text-muted-foreground hover:text-foreground">
+              <BarChart2 className="w-3.5 h-3.5" /> Teacher Login
+            </Button>
+          </Link>
         </div>
       </motion.div>
     </div>
