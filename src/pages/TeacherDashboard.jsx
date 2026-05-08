@@ -41,6 +41,8 @@ function RankBadge({ rank }) {
 export default function TeacherDashboard() {
   const [pin, setPin] = useState("");
   const [unlocked, setUnlocked] = useState(false);
+  const [pinError, setPinError] = useState(false);
+  const [students, setStudents] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -48,9 +50,6 @@ export default function TeacherDashboard() {
     setPin("");
     setPinError(false);
   }, [location.pathname]);
-
-  const [pinError, setPinError] = useState(false);
-  const [students, setStudents] = useState([]);
   const [tab, setTab] = useState("leaderboard");
   const [filterPeriod, setFilterPeriod] = useState("All");
 
