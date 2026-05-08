@@ -51,15 +51,15 @@ function CheckField({ label, value, placeholder, onChange, width, hint, verified
 const CHECK_TASKS = [
   {
     id: "rent",
-    instruction: (s) => `Write a check to your landlord for your monthly rent payment of $${s.fixedExpenses.rent}.00.`,
-    payTo: (s) => "City Properties LLC",
+    instruction: (s) => `Write a check to your landlord (${s.living.landlord}) for your monthly rent payment of $${s.fixedExpenses.rent}.00.`,
+    payTo: (s) => s.living.landlord,
     amount: (s) => s.fixedExpenses.rent,
     memo: "Rent",
   },
   {
     id: "electric",
-    instruction: (s) => `Write a check to the electric company for $${s.fixedExpenses.utilities}.00.`,
-    payTo: (s) => "Metro Electric Co.",
+    instruction: (s) => `Write a check to your utility company (${s.living.utilityCompany}) for $${s.fixedExpenses.utilities}.00.`,
+    payTo: (s) => s.living.utilityCompany,
     amount: (s) => s.fixedExpenses.utilities,
     memo: "Electricity bill",
   },
