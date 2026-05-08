@@ -40,6 +40,24 @@ const lifeEvents = [
   { description: "You want to start investing — goal is $100/month.", monthlyPayment: 0, savingsGoal: 100 },
 ];
 
+// Unexpected financial shock events that test adaptability
+export const financialShocks = [
+  { id: "car_repair", icon: "🔧", title: "Car Breakdown!", description: "Your car needs an urgent repair — brakes and rotors.", cost: 850, category: "Transportation", tip: "This is why mechanics recommend a $1,000+ car emergency fund." },
+  { id: "medical_er", icon: "🏥", title: "ER Visit!", description: "You had an unexpected trip to the emergency room.", cost: 1200, category: "Medical", tip: "Even with insurance, ER co-pays and deductibles can be costly. Health insurance is essential." },
+  { id: "job_loss", icon: "📉", title: "Hours Cut!", description: "Your employer reduced your hours for two weeks.", cost: 600, category: "Income", tip: "An emergency fund covering 3-6 months of expenses protects you during income disruptions." },
+  { id: "appliance", icon: "🧊", title: "Fridge Died!", description: "Your refrigerator broke and needs replacing.", cost: 500, category: "Home", tip: "Setting aside $50/month into a home repair fund helps cover surprise appliance failures." },
+  { id: "vet_bill", icon: "🐾", title: "Vet Emergency!", description: "Your pet needed emergency veterinary care.", cost: 700, category: "Pet", tip: "Pet insurance or a dedicated savings fund can prevent vet bills from derailing your budget." },
+  { id: "dental", icon: "🦷", title: "Dental Emergency!", description: "You cracked a tooth and need a crown.", cost: 950, category: "Medical", tip: "Dental emergencies often aren't covered by basic health insurance. Dental savings plans help." },
+  { id: "phone_repair", icon: "📱", title: "Phone Stolen!", description: "Your phone was stolen and needs replacement.", cost: 400, category: "Tech", tip: "A renters/homeowners insurance policy often covers stolen personal property." },
+  { id: "rent_hike", icon: "🏠", title: "Rent Increase!", description: "Your landlord raised your rent by $150/month starting next month.", cost: 150, category: "Housing", isMonthly: true, tip: "Landlords can raise rent at lease renewal. It's important to budget with buffer room." },
+  { id: "identity_theft", icon: "🔒", title: "Identity Theft!", description: "Someone opened a credit card in your name — legal fees and monitoring needed.", cost: 300, category: "Security", tip: "Free credit freezes at all 3 bureaus are the best protection against identity theft." },
+  { id: "layoff_pay", icon: "💼", title: "Job Loss!", description: "You were unexpectedly laid off. You have 3 months of savings — how long can you survive?", cost: 0, category: "Income", isLayoff: true, tip: "Experts recommend 3-6 months of expenses saved. File for unemployment benefits immediately." },
+];
+
+function pickShock(rand) {
+  return financialShocks[Math.floor(rand() * financialShocks.length)];
+}
+
 const filingStatuses = [
   { status: "Single, no dependents", filing: "single", dependents: 0 },
   { status: "Single, one dependent (younger sibling you support)", filing: "head_of_household", dependents: 1 },
@@ -65,15 +83,16 @@ function hashString(str) {
   return Math.abs(hash);
 }
 
-export function generateScenario(studentName, pathId = "conservative") {
-  const seed = hashString(studentName.toLowerCase().trim());
-  const rand = seededRandom(seed);
+export function generateScenario(studentName, pathId = "conservative", randomSeed = 0) {
+  const seed = hashString(studentName.toLowerCase().trim()) + randomSeed;
+  const rand = seededRandom(Math.abs(seed));
 
   const job = jobs[Math.floor(rand() * jobs.length)];
   const living = livingSituations[Math.floor(rand() * livingSituations.length)];
   const vehicle = vehicles[Math.floor(rand() * vehicles.length)];
   const lifeEvent = lifeEvents[Math.floor(rand() * lifeEvents.length)];
   const filingStatus = filingStatuses[Math.floor(rand() * filingStatuses.length)];
+  const shock = pickShock(rand);
 
   // Path modifiers — imported lazily to avoid circular deps
   const pathModifiers = {
@@ -122,11 +141,13 @@ export function generateScenario(studentName, pathId = "conservative") {
   return {
     name: studentName,
     pathId,
+    randomSeed,
     job: { ...job, annualSalary: baseAnnualSalary },
     living,
     vehicle,
     lifeEvent: adjustedLifeEvent,
     filingStatus,
+    shock,
     monthlyGross,
     monthlyNet,
     sideIncomeMonthly,

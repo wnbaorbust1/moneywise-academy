@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Briefcase, Home, Car, AlertTriangle, FileText,
-  DollarSign, ArrowRight, ShieldCheck
+  DollarSign, ArrowRight, ShieldCheck, Shuffle, Zap, Info
 } from "lucide-react";
 
 function hashCode(str) {
@@ -51,7 +51,7 @@ function ScenarioSection({ icon: Icon, title, description, detail, color, index 
   );
 }
 
-export default function ScenarioCard({ scenario, onContinue }) {
+export default function ScenarioCard({ scenario, onContinue, onRandomize }) {
   const scenarioId = hashCode(scenario.name.toLowerCase().trim() + (scenario.pathId || ""));
 
   const paycheck = scenario.job.payFrequency === "weekly"
@@ -78,6 +78,19 @@ export default function ScenarioCard({ scenario, onContinue }) {
           Unique Scenario ID: <strong className="font-mono text-foreground">{scenarioId}</strong>
         </div>
         <p className="text-[10px] text-muted-foreground mt-1">Your teacher can verify this is your personal scenario — no two students share the same one.</p>
+        {onRandomize && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onRandomize}
+              className="mt-3 gap-1.5 text-xs border-dashed"
+            >
+              <Shuffle className="w-3.5 h-3.5" /> Randomize My Life Scenario
+            </Button>
+            <p className="text-[10px] text-muted-foreground mt-1">Get a different job, housing & financial situation</p>
+          </motion.div>
+        )}
       </motion.div>
 
       <div className="grid gap-3">
@@ -159,6 +172,39 @@ export default function ScenarioCard({ scenario, onContinue }) {
             </div>
           </div>
         </Card>
+
+        {scenario.shock && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className="mt-4"
+          >
+            <Card className="p-4 border-2 border-destructive/30 bg-destructive/5">
+              <div className="flex items-start gap-3">
+                <div className="text-2xl shrink-0">{scenario.shock.icon}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <span className="font-bold text-sm text-destructive flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5" /> Unexpected Event: {scenario.shock.title}
+                    </span>
+                    <Badge variant="destructive" className="text-[10px]">{scenario.shock.category}</Badge>
+                  </div>
+                  <p className="text-sm text-foreground">{scenario.shock.description}</p>
+                  {scenario.shock.cost > 0 && (
+                    <p className="text-sm font-semibold text-destructive mt-1">
+                      Cost: ${scenario.shock.isMonthly ? `${scenario.shock.cost}/month more` : scenario.shock.cost.toLocaleString()}
+                    </p>
+                  )}
+                  <div className="flex items-start gap-1 mt-2 p-2 rounded-lg bg-muted/60">
+                    <Info className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{scenario.shock.tip}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        )}
 
         <Button onClick={onContinue} className="w-full mt-4 h-12 text-base gap-2">
           Begin the Exam <ArrowRight className="w-4 h-4" />

@@ -36,6 +36,7 @@ export default function Exam() {
   const [studentName, setStudentName] = useState(null);
   const [classPeriod, setClassPeriod] = useState(null);
   const [selectedPath, setSelectedPath] = useState(null); // null = path not chosen yet
+  const [randomSeed, setRandomSeed] = useState(0);
   const [currentModule, setCurrentModule] = useState(0);
   const [scores, setScores] = useState([]);
   const [xpGain, setXpGain] = useState(0);
@@ -47,8 +48,8 @@ export default function Exam() {
   const prevBadgeIdsRef = useRef(new Set());
 
   const scenario = useMemo(
-    () => (studentName && selectedPath ? generateScenario(studentName, selectedPath) : null),
-    [studentName, selectedPath]
+    () => (studentName && selectedPath ? generateScenario(studentName, selectedPath, randomSeed) : null),
+    [studentName, selectedPath, randomSeed]
   );
 
   const budgetQs = useMemo(() => (scenario ? getBudgetQuestions(scenario) : []), [scenario]);
@@ -74,7 +75,12 @@ export default function Exam() {
     setSelectedPath(null);
     setCurrentModule(0);
     setScores([]);
+    setRandomSeed(0);
     prevXPRef.current = 0;
+  };
+
+  const handleRandomize = () => {
+    setRandomSeed(prev => prev + Math.floor(Math.random() * 999983) + 1);
   };
 
   const handlePathSelect = (pathId) => {
@@ -146,6 +152,7 @@ export default function Exam() {
     setSelectedPath(null);
     setCurrentModule(0);
     setScores([]);
+    setRandomSeed(0);
     prevXPRef.current = 0;
   };
 
@@ -208,7 +215,7 @@ export default function Exam() {
         <AnimatePresence mode="wait">
           {currentModule === 0 && (
             <motion.div key="scenario" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-              <ScenarioCard scenario={scenario} onContinue={() => setCurrentModule(1)} />
+              <ScenarioCard scenario={scenario} onContinue={() => setCurrentModule(1)} onRandomize={handleRandomize} />
             </motion.div>
           )}
           {currentModule === 1 && (
