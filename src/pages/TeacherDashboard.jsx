@@ -12,7 +12,7 @@ import {
 import { getAllStudents, clearAllStudents } from "@/lib/storage";
 import ExportButton from "@/components/teacher/ExportButton";
 import { getLevel, getFinancialHealthLabel } from "@/lib/xpSystem";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const TEACHER_PIN = "1234";
 
@@ -41,10 +41,7 @@ function RankBadge({ rank }) {
 export default function TeacherDashboard() {
   const [pin, setPin] = useState("");
   const [unlocked, setUnlocked] = useState(false);
-  const location = useLocation();
 
-  // Reset lock whenever navigating to this page
-  useEffect(() => { setUnlocked(false); setPin(""); setPinError(false); }, [location.key]);
   const [pinError, setPinError] = useState(false);
   const [students, setStudents] = useState([]);
   const [tab, setTab] = useState("leaderboard");
